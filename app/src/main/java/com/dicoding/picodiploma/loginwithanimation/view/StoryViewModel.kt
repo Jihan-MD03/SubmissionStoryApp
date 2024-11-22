@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dicoding.picodiploma.loginwithanimation.data.UserRepository
+import com.dicoding.picodiploma.loginwithanimation.data.StoryRepository
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.ListStoryItem
 import kotlinx.coroutines.launch
 
-class StoryViewModel(private val userRepository: UserRepository) : ViewModel() {
+class StoryViewModel(private val userRepository: StoryRepository) : ViewModel() {
 
     private val _stories = MutableLiveData<List<ListStoryItem>>()
     val stories: LiveData<List<ListStoryItem>> get() = _stories

@@ -2,6 +2,7 @@ package com.dicoding.picodiploma.loginwithanimation.view
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dicoding.picodiploma.loginwithanimation.data.StoryRepository
 import com.dicoding.picodiploma.loginwithanimation.data.UserRepository
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
 import kotlinx.coroutines.flow.first
@@ -13,7 +14,7 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 val message = userRepository.register(name, email, password)
-                onResult(true, message) // Tampilkan pesan sukses
+                onResult(true, message.toString()) // Tampilkan pesan sukses
             } catch (e: Exception) {
                 onResult(false, e.message ?: "Registration failed") // Tampilkan pesan error
             }

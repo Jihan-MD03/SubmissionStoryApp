@@ -24,8 +24,8 @@ class StoryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_story)
 
         // Dapatkan ViewModel
-        val userRepository = Injection.provideUserRepository(applicationContext)
-        val factory = ViewModelFactory(userRepository)
+        val storyRepository = Injection.provideRepository(applicationContext)
+        val factory = ViewModelFactory(storyRepository)
         storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
 
         // Inisialisasi RecyclerView

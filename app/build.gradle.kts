@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -45,8 +46,10 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.8.3")
 
     // Room depency
-    implementation("androidx.room:room-runtime:2.7.0")
-    implementation("androidx.room:room-compiler:2.7.0")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 
     // tESTING
     testImplementation("junit:junit:4.13.2")
@@ -59,7 +62,7 @@ dependencies {
     // view model
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0")
 
     // Activity
