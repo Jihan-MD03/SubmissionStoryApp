@@ -16,15 +16,6 @@ class StoryRepository private constructor(private val apiService: ApiService) {
         }
     }
 
-    fun getSession(): Any {
-
-        return TODO("Provide the return value")
-    }
-
-    fun logout() {
-        TODO("Not yet implemented")
-    }
-
     companion object {
         @Volatile
         private var instance: StoryRepository? = null
