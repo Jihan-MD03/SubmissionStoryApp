@@ -19,10 +19,10 @@ class StoryViewModel(private val storyRepository: StoryRepository) : ViewModel()
     fun getStories(token: String) {
         viewModelScope.launch {
             try {
-                val data = storyRepository.getStories(token)
-                _stories.postValue(data)
+                val response = storyRepository.getStories(token)
+                _stories.postValue(response)
             } catch (e: Exception) {
-                _error.postValue(e.message)
+                _error.postValue("Failed to load stories: ${e.message}")
             }
         }
     }

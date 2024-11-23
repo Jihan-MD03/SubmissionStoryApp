@@ -21,6 +21,3 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
     }
 }
 
-private fun Any.asLiveData(): LiveData<UserModel> {
-    TODO("Not yet implemented")
-}

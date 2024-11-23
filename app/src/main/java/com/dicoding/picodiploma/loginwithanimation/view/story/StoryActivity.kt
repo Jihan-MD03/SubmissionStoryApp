@@ -6,12 +6,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dicoding.picodiploma.loginwithanimation.R
+import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
+import com.dicoding.picodiploma.loginwithanimation.data.pref.dataStore
 import com.dicoding.picodiploma.loginwithanimation.di.Injection
 import com.dicoding.picodiploma.loginwithanimation.view.StoryViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
+import kotlinx.coroutines.launch
 
 class StoryActivity : AppCompatActivity() {
 
@@ -24,8 +28,9 @@ class StoryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_story)
 
         // Dapatkan ViewModel
-        val storyRepository = Injection.provideRepository(applicationContext)
-        val factory = ViewModelFactory(storyRepository)
+        val userRepository = Injection.provideUserRepository(applicationContext) // Pastikan ada fungsi ini di Injection
+        val storyRepository = Injection.provideStoryRepository(applicationContext) // Pastikan fungsi ini ada
+        val factory = ViewModelFactory(userRepository, storyRepository)
         storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
 
         // Inisialisasi RecyclerView
@@ -34,17 +39,35 @@ class StoryActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = storyAdapter
 
-        // Ambil token dan fetch data
-        val token = "your_token_here" // Dapatkan token yang benar
-        storyViewModel.getStories(token)
+        // Ambil token dengan cara yang benar menggunakan coroutine
+        lifecycleScope.launch {
+            val token = getTokenFromPreference()  // Ambil token dari preferensi secara asinkron
 
-        // Observasi LiveData dari ViewModel
-        storyViewModel.stories.observe(this, Observer { stories ->
-            storyAdapter.submitList(stories) // Kirim data ke adapter
-        })
+            // Mengambil data stories dengan token
+            storyViewModel.getStories(token)
 
-        storyViewModel.error.observe(this, Observer { error ->
-            Toast.makeText(this, error, Toast.LENGTH_SHORT).show() // Tampilkan pesan error jika ada
-        })
+            // Observasi LiveData stories dan error
+            storyViewModel.stories.observe(this@StoryActivity) { stories ->
+                if (stories.isNotEmpty()) {
+                    storyAdapter.submitList(stories)  // Kirim data ke adapter
+                } else {
+                    Toast.makeText(this@StoryActivity, "No stories found", Toast.LENGTH_SHORT).show()  // Jika tidak ada cerita
+                }
+            }
+
+            storyViewModel.error.observe(this@StoryActivity) { error ->
+                Toast.makeText(this@StoryActivity, error, Toast.LENGTH_SHORT).show()  // Tampilkan error jika ada
+            }
+        }
+    }
+
+    // Fungsi untuk mengambil token dari preferensi atau session
+    private suspend fun getTokenFromPreference(): String {
+        // Ambil token dari UserPreference atau session
+        val userPreference = UserPreference.getInstance(applicationContext.dataStore)
+        return userPreference.getToken() ?: ""  // Mengembalikan token atau string kosong jika token tidak ada
     }
 }
+
+
+

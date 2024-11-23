@@ -65,12 +65,17 @@ class UserRepository private constructor(
 
     suspend fun getStories(token: String): List<ListStoryItem> {
         return try {
-            val response = apiService.getStories("Bearer $token") // Menggunakan token untuk akses API
-            response.listStory // Asumsikan API mengembalikan data berupa listStory
+            val response = apiService.getStories("Bearer $token") // Memanggil API
+            if (response.isSuccessful) {
+                response.body() ?: emptyList() // Respons langsung berupa List<ListStoryItem>
+            } else {
+                throw Exception("Failed to fetch stories: ${response.message()}")
+            }
         } catch (e: Exception) {
-            throw Exception("Error fetching stories")
+            throw Exception("Error fetching stories: ${e.message}")
         }
     }
+
 
     companion object {
         @Volatile

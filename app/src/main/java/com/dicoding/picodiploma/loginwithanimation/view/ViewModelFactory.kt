@@ -5,10 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.picodiploma.loginwithanimation.data.StoryRepository
 import com.dicoding.picodiploma.loginwithanimation.data.UserRepository
+import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
+import com.dicoding.picodiploma.loginwithanimation.data.pref.dataStore
 import com.dicoding.picodiploma.loginwithanimation.view.login.LoginViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.main.MainViewModel
-import com.dicoding.picodiploma.loginwithanimation.di.provideRepository
-
+import com.dicoding.picodiploma.loginwithanimation.di.Injection
+import com.dicoding.picodiploma.loginwithanimation.data.remote.ApiConfig
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 
 class ViewModelFactory(
@@ -44,7 +48,14 @@ class ViewModelFactory(
             if (INSTANCE == null) {
                 synchronized(ViewModelFactory::class.java) {
                     val userRepository = Injection.provideRepository(context) // Call the function directly
-                    val storyRepository = StoryRepository.getInstance() // Get StoryRepository instance
+
+                    // Dapatkan token dari UserPreference
+                    val pref = UserPreference.getInstance(context.dataStore)
+                    val token = runBlocking { pref.getSession().first().token ?: "" } // Default ke empty jika null
+
+                    val apiService = ApiConfig.getApiService(token)
+                    val storyRepository = StoryRepository.getInstance(apiService)
+
                     INSTANCE = ViewModelFactory(userRepository, storyRepository)
                 }
             }
