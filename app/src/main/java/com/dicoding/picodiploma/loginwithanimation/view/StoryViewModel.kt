@@ -1,5 +1,6 @@
 package com.dicoding.picodiploma.loginwithanimation.view
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,6 +24,8 @@ class StoryViewModel(private val storyRepository: StoryRepository) : ViewModel()
                 _stories.postValue(response)
             } catch (e: Exception) {
                 _error.postValue("Failed to load stories: ${e.message}")
+                // Tambahkan log di sini
+                Log.e("StoryViewModel", "Error fetching stories", e)
             }
         }
     }

@@ -75,14 +75,16 @@ class SignupActivity : AppCompatActivity() {
                     Toast.makeText(this, "Register gagal: $message", Toast.LENGTH_SHORT).show()
                 }
 
-                AlertDialog.Builder(this).apply {
-                    setTitle("Yeah!")
-                    setMessage("Akun dengan $email sudah jadi nih. Yuk, login dan bagikan pengalaman di dicoding.")
-                    setPositiveButton("Lanjut") { _, _ ->
-                        finish()
+                if (!isFinishing && !isDestroyed) {
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Yeah!")
+                        setMessage("Akun dengan $email sudah jadi nih. Yuk, login dan bagikan pengalaman di dicoding.")
+                        setPositiveButton("Lanjut") { _, _ ->
+                            finish()
+                        }
+                        create()
+                        show()
                     }
-                    create()
-                    show()
                 }
             }
         }

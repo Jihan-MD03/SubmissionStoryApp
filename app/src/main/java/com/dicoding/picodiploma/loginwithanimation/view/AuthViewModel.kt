@@ -1,5 +1,6 @@
 package com.dicoding.picodiploma.loginwithanimation.view
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dicoding.picodiploma.loginwithanimation.data.StoryRepository
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
+
 
     fun register(name: String, email: String, password: String, onResult: (Boolean, String) -> Unit) {
         viewModelScope.launch {
@@ -27,7 +29,7 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
                 val token = userRepository.login(email, password)
                 if (!token.isNullOrEmpty()) {
                     // Simpan token ke DataStore setelah login sukses
-                    userRepository.saveToken(token)
+                    userRepository.saveToken(token.toString())
 
                     // Anda bisa memanggil callback dengan sukses
                     callback(true, "Login berhasil")

@@ -45,8 +45,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun playAnimation(){
-        ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -30f, 30f). apply {
+    private fun playAnimation() {
+        ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -30f, 30f).apply {
             duration = 6000
             repeatCount = ObjectAnimator.INFINITE
             repeatMode = ObjectAnimator.REVERSE
@@ -85,7 +85,8 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "Login berhasil", Toast.LENGTH_SHORT).show()
 
                     // Ambil token dari response login (dari UserPreference atau session)
-                    val token = "token_from_response"  // Gantilah dengan token yang valid yang didapat dari response
+                    val token =
+                        "token_from_response"  // Gantilah dengan token yang valid yang didapat dari response
 
                     // Simpan token ke DataStore
                     authViewModel.saveToken(token)
@@ -98,19 +99,22 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "Login gagal: $message", Toast.LENGTH_SHORT).show()
                 }
             }
-            AlertDialog.Builder(this).apply {
-                setTitle("Yeah!")
-                setMessage("Anda berhasil login. Sudah tidak sabar untuk berbagi pengalaman nih!")
-                setPositiveButton("Lanjut") { _, _ ->
-                    val intent = Intent(context, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    finish()
+            if (!isFinishing && !isDestroyed) {
+                AlertDialog.Builder(this).apply {
+                    setTitle("Yeah!")
+                    setMessage("Anda berhasil login. Sudah tidak sabar untuk berbagi pengalaman nih!")
+                    setPositiveButton("Lanjut") { _, _ ->
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        finish()
+                    }
+                    create()
+                    show()
                 }
-                create()
-                show()
             }
+
         }
     }
-
 }

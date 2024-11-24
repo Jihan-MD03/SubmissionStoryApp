@@ -2,9 +2,9 @@ package com.dicoding.picodiploma.loginwithanimation.view.story
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,12 +42,14 @@ class StoryActivity : AppCompatActivity() {
         // Ambil token dengan cara yang benar menggunakan coroutine
         lifecycleScope.launch {
             val token = getTokenFromPreference()  // Ambil token dari preferensi secara asinkron
+            Log.d("Token", "Retrieved token: $token")
 
             // Mengambil data stories dengan token
             storyViewModel.getStories(token)
 
             // Observasi LiveData stories dan error
             storyViewModel.stories.observe(this@StoryActivity) { stories ->
+                Log.d("StoryActivity", "Stories loaded: ${stories.size}")
                 if (stories.isNotEmpty()) {
                     storyAdapter.submitList(stories)  // Kirim data ke adapter
                 } else {
