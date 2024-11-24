@@ -45,7 +45,7 @@ class StoryActivity : AppCompatActivity() {
             Log.d("Token", "Retrieved token: $token")
 
             // Mengambil data stories dengan token
-            storyViewModel.getStories(token)
+            storyViewModel.getStories()
 
             // Observasi LiveData stories dan error
             storyViewModel.stories.observe(this@StoryActivity) { stories ->

@@ -17,10 +17,10 @@ class StoryViewModel(private val storyRepository: StoryRepository) : ViewModel()
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
 
-    fun getStories(token: String) {
+    fun getStories() {
         viewModelScope.launch {
             try {
-                val response = storyRepository.getStories(token)
+                val response = storyRepository.getStories()
                 _stories.postValue(response)
             } catch (e: Exception) {
                 _error.postValue("Failed to load stories: ${e.message}")

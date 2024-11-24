@@ -68,16 +68,22 @@ class UserRepository private constructor(
 
     suspend fun getStories(token: String): List<ListStoryItem> {
         return try {
-            val response = apiService.getStories("Bearer $token") // Memanggil API
-            if (response.isSuccessful) {
-                response.body() ?: emptyList() // Respons langsung berupa List<ListStoryItem>
-            } else {
-                throw Exception("Failed to fetch stories: ${response.message()}")
-            }
+            // Langsung panggil API, karena getStories tidak menerima argumen
+            val storyResponse = apiService.getStories()
+
+            // Return daftar cerita dari StoryResponse
+            storyResponse.listStory
+        } catch (e: HttpException) {
+            // Tangani kesalahan dari API
+            val errorBody = e.response()?.errorBody()?.string()
+            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+            throw Exception(errorResponse?.message ?: "Unknown error occurred")
         } catch (e: Exception) {
+            // Tangani kesalahan umum
             throw Exception("Error fetching stories: ${e.message}")
         }
     }
+
 
 
     companion object {
