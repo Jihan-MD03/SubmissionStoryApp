@@ -7,7 +7,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
-    private const val BASE_URL = "https://story-api.dicoding.dev/v1/"
 
 
     // Fungsi untuk membuat ApiService dengan token

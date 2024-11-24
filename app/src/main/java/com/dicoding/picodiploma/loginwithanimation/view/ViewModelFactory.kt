@@ -7,7 +7,6 @@ import com.dicoding.picodiploma.loginwithanimation.data.StoryRepository
 import com.dicoding.picodiploma.loginwithanimation.data.UserRepository
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.pref.dataStore
-import com.dicoding.picodiploma.loginwithanimation.view.login.LoginViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.main.MainViewModel
 import com.dicoding.picodiploma.loginwithanimation.di.Injection
 import com.dicoding.picodiploma.loginwithanimation.data.remote.ApiConfig
@@ -25,9 +24,6 @@ class ViewModelFactory(
         return when {
             modelClass.isAssignableFrom(MainViewModel::class.java) -> {
                 MainViewModel(userRepository) as T
-            }
-            modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
-                LoginViewModel(userRepository) as T
             }
             modelClass.isAssignableFrom(AuthViewModel::class.java) -> {
                 AuthViewModel(userRepository) as T // Perbaiki penggunaan repository

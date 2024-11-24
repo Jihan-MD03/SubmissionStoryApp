@@ -3,6 +3,7 @@ package com.dicoding.picodiploma.loginwithanimation.data.remote
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.LoginResponse
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.RegisterResponse
+import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.StoryResponse
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -28,6 +29,6 @@ interface ApiService {
 
     @GET("stories")
     suspend fun getStories(
-        @Header("Authorization") token: String //  menambahkan parameter berupa header karena membutuhkan token yang didapat ketika login untuk mengakses endpoint tersebut.
-    ): Response<List<ListStoryItem>>
+        @Header("Authorization") token: String,
+    ): StoryResponse
 }

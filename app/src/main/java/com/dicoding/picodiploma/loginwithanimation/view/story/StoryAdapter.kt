@@ -5,11 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.databinding.ItemStoryBinding
 
 
 class StoryAdapter : ListAdapter<ListStoryItem, StoryAdapter.StoryViewHolder>(StoryDiffCallback()) {
+
+    //private var stories: List<StoryActivity> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoryViewHolder {
         val binding = ItemStoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -21,10 +24,17 @@ class StoryAdapter : ListAdapter<ListStoryItem, StoryAdapter.StoryViewHolder>(St
         holder.bind(story)
     }
 
+    override fun getItemCount(): Int = currentList.size
+
     inner class StoryViewHolder(private val binding: ItemStoryBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(story: ListStoryItem) {
-            binding.storyTitle.text = story.id
+            binding.storyTitle.text = story.name
             binding.storyDescription.text = story.description
+
+            // Memuat gambar menggunakan Glide
+            Glide.with(binding.root.context)
+                .load(story.photoUrl)
+                .into(binding.ivStoryLogo)
         }
     }
 

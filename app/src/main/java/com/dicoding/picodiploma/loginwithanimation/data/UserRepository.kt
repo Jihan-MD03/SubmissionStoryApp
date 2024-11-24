@@ -5,8 +5,11 @@ import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.remote.ApiService
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.ErrorResponse
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.ListStoryItem
+import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.LoginResult
+import com.dicoding.picodiploma.loginwithanimation.data.remote.Result
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 
 class UserRepository private constructor(
@@ -27,14 +30,14 @@ class UserRepository private constructor(
     }
 
     // Fungsi untuk login
-    suspend fun login(email: String, password: String): String {
-        return try {
+    fun login(email: String, password: String): Flow<Result<LoginResult>> = flow {
+        emit(Result.Loading)
+        try {
             val response = apiService.login(email, password)
-            response.loginResult.token // Berhasil, ambil token
+            val result = response.loginResult
+            emit(Result.Success(result))
         } catch (e: HttpException) {
-            val errorBody = e.response()?.errorBody()?.string()
-            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-            throw Exception(errorResponse?.message ?: "Unknown error occurred") // Lempar pesan error
+            emit(Result.Error(e.message()))
         }
     }
 

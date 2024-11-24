@@ -11,16 +11,15 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.dicoding.picodiploma.loginwithanimation.data.remote.Result
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
 import com.dicoding.picodiploma.loginwithanimation.databinding.ActivityLoginBinding
 import com.dicoding.picodiploma.loginwithanimation.view.AuthViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
 import com.dicoding.picodiploma.loginwithanimation.view.main.MainActivity
+import com.dicoding.picodiploma.loginwithanimation.view.story.StoryActivity
 
 class LoginActivity : AppCompatActivity() {
-    private val viewModel by viewModels<LoginViewModel> {
-        ViewModelFactory.getInstance(this)
-    }
     private lateinit var binding: ActivityLoginBinding
     private val authViewModel by viewModels<AuthViewModel> {
         ViewModelFactory.getInstance(this)
@@ -80,41 +79,47 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             // Panggil API login melalui AuthViewModel
-            authViewModel.login(email, password) { success, message ->
-                if (success) {
-                    Toast.makeText(this, "Login berhasil", Toast.LENGTH_SHORT).show()
-
-                    // Ambil token dari response login (dari UserPreference atau session)
-                    val token =
-                        "token_from_response"  // Gantilah dengan token yang valid yang didapat dari response
-
-                    // Simpan token ke DataStore
-                    authViewModel.saveToken(token)
-
-                    val intent = Intent(this, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this, "Login gagal: $message", Toast.LENGTH_SHORT).show()
-                }
-            }
-            if (!isFinishing && !isDestroyed) {
-                AlertDialog.Builder(this).apply {
-                    setTitle("Yeah!")
-                    setMessage("Anda berhasil login. Sudah tidak sabar untuk berbagi pengalaman nih!")
-                    setPositiveButton("Lanjut") { _, _ ->
-                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        finish()
+            authViewModel.login(email, password).observe(this) { result ->
+                when (result) {
+                    is Result.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(this, result.error, Toast.LENGTH_SHORT).show()
                     }
-                    create()
-                    show()
+
+                    is Result.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+
+                    is Result.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        val loginResult = result.data
+                        authViewModel.run {
+                            saveToken(result.data.token)
+                            saveSession(
+                                UserModel(
+                                    email = email,
+                                    token = result.data.token,
+                                    password = password,
+                                    isLogin = true
+                                )
+                            )
+                        }
+                        AlertDialog.Builder(this).apply {
+                            setTitle("Yeah!")
+                            setMessage("Anda berhasil login. Sudah tidak sabar untuk berbagi pengalaman nih!")
+                            setPositiveButton("Lanjut") { _, _ ->
+                                val intent = Intent(this@LoginActivity, StoryActivity::class.java)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                                finish()
+                            }
+                            create()
+                            show()
+                        }
+                    }
                 }
             }
-
         }
     }
 }

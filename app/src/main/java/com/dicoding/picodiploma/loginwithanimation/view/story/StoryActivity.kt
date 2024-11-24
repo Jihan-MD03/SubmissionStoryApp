@@ -59,6 +59,7 @@ class StoryActivity : AppCompatActivity() {
 
             storyViewModel.error.observe(this@StoryActivity) { error ->
                 Toast.makeText(this@StoryActivity, error, Toast.LENGTH_SHORT).show()  // Tampilkan error jika ada
+                Log.e("StoryActivity", "Error: $error")
             }
         }
     }

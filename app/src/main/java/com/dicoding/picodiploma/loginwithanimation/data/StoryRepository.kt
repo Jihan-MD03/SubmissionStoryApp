@@ -15,8 +15,10 @@ import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.StoryRe
 
                 if (response.isSuccessful) {
                     val storyResponse = response.body() as StoryResponse
-                    storyResponse.listStory ?: emptyList()
+                    storyResponse.listStory
                 } else {
+                    Log.e("StoryRepository", "Error code: ${response.code()} - ${response.message()}")
+                    Log.e("StoryRepository", "Error Body: ${response.errorBody()?.string()}")
                     throw Exception("Failed to fetch stories: ${response.message()}")
                 }
 

@@ -1,11 +1,15 @@
 package com.dicoding.picodiploma.loginwithanimation.view
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.dicoding.picodiploma.loginwithanimation.data.StoryRepository
 import com.dicoding.picodiploma.loginwithanimation.data.UserRepository
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
+import com.dicoding.picodiploma.loginwithanimation.data.remote.Result
+import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.LoginResult
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -23,24 +27,8 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
         }
     }
 
-    fun login(email: String, password: String, callback: (Boolean, String) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val token = userRepository.login(email, password)
-                if (!token.isNullOrEmpty()) {
-                    // Simpan token ke DataStore setelah login sukses
-                    userRepository.saveToken(token.toString())
-
-                    // Anda bisa memanggil callback dengan sukses
-                    callback(true, "Login berhasil")
-                } else {
-                    callback(false, "Token tidak ditemukan")
-                }
-            } catch (e: Exception) {
-                // Menangani error
-                callback(false, e.message ?: "Login gagal")
-            }
-        }
+    fun login(email: String, password: String): LiveData<Result<LoginResult>> {
+        return userRepository.login(email, password).asLiveData()
     }
 
     // Fungsi untuk menyimpan token
@@ -60,6 +48,9 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
             onResult(userSession)
         }
     }
-
+    fun saveSession(userModel: UserModel) = viewModelScope.launch {
+        userRepository.saveSession(userModel)
+    }
 }
+
 
