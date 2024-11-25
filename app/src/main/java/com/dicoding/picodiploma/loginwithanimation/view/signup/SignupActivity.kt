@@ -67,13 +67,17 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            showLoading(true)
+
             // Panggil API register melalui AuthViewModel
             authViewModel.register(name, email, password) { success, message ->
+                showLoading(false)
                 if (success) {
                     Toast.makeText(this, "Register berhasil: $message", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Register gagal: $message", Toast.LENGTH_SHORT).show()
                 }
+
 
                 if (!isFinishing && !isDestroyed) {
                     AlertDialog.Builder(this).apply {
@@ -88,5 +92,10 @@ class SignupActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.signupButton.isEnabled = !isLoading // Nonaktifkan tombol saat loading
     }
 }

@@ -9,14 +9,13 @@
     <!-- Gambar Story -->
     <ImageView
         android:id="@+id/ivStoryLogo"
-        android:layout_height="200dp"
+        android:layout_height="0dp"
         android:layout_width="0dp"
         android:scaleType="centerCrop"
         tools:src="@tools:sample/avatars"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/storyTitle"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- Judul Story -->
     <TextView
@@ -29,26 +28,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Deskripsi Story -->
-    <TextView
-        android:id="@+id/storyDescription"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Story Description"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/storyTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- RecyclerView untuk menampilkan daftar cerita -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/storyDescription"
+        app:layout_constraintTop_toBottomOf="@id/storyTitle"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
         android:scrollbars="vertical"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

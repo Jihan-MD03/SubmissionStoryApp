@@ -1,5 +1,6 @@
 package com.dicoding.picodiploma.loginwithanimation.view.story
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -35,6 +36,14 @@ class StoryAdapter : ListAdapter<ListStoryItem, StoryAdapter.StoryViewHolder>(St
             Glide.with(binding.root.context)
                 .load(story.photoUrl)
                 .into(binding.ivStoryLogo)
+
+            // Menambahkan klik pada item story
+            binding.root.setOnClickListener {
+                // Mengirim ID story ke StoryDetailActivity
+                val intent = Intent(binding.root.context, StoryDetailActivity::class.java)
+                intent.putExtra("story_id", story.id) // Mengirimkan ID story
+                binding.root.context.startActivity(intent)
+            }
         }
     }
 

@@ -65,27 +65,6 @@ class UserRepository private constructor(
     suspend fun logout() {
         userPreference.logout()
     }
-
-    suspend fun getStories(token: String): List<ListStoryItem> {
-        return try {
-            // Langsung panggil API, karena getStories tidak menerima argumen
-            val storyResponse = apiService.getStories()
-
-            // Return daftar cerita dari StoryResponse
-            storyResponse.listStory
-        } catch (e: HttpException) {
-            // Tangani kesalahan dari API
-            val errorBody = e.response()?.errorBody()?.string()
-            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-            throw Exception(errorResponse?.message ?: "Unknown error occurred")
-        } catch (e: Exception) {
-            // Tangani kesalahan umum
-            throw Exception("Error fetching stories: ${e.message}")
-        }
-    }
-
-
-
     companion object {
         @Volatile
         private var instance: UserRepository? = null
