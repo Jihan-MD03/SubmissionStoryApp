@@ -32,6 +32,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class AddStoryActivity : AppCompatActivity() {
@@ -70,19 +71,20 @@ class AddStoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_story)
 
-        storyViewModel = ViewModelProvider(this, ViewModelFactory.getInstance(applicationContext)).get(StoryViewModel::class.java)
+        storyViewModel = ViewModelProvider(this, ViewModelFactory.getInstance(applicationContext))[StoryViewModel::class.java]
 
         // Observer untuk upload success
-        storyViewModel.uploadSuccess.observe(this, Observer { response ->
+        storyViewModel.uploadSuccess.observe(this) { response ->
             if (response != null && !response.error) {
                 navigateToMain()  // Arahkan ke MainActivity jika upload sukses
             }
-        })
+        }
 
         // Observer untuk menangani error
-        storyViewModel.error.observe(this, Observer { errorMessage ->
-            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()  // Tampilkan error jika gagal upload
-        })
+        storyViewModel.error.observe(this) { errorMessage ->
+            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG)
+                .show()  // Tampilkan error jika gagal upload
+        }
 
         checkPermissions()  // Panggil fungsi cek izin
 
@@ -97,7 +99,7 @@ class AddStoryActivity : AppCompatActivity() {
             val options = arrayOf("Pilih dari Galeri", "Ambil Foto")
             val builder = android.app.AlertDialog.Builder(this)
             builder.setTitle("Pilih Opsi")
-                .setItems(options) { dialog, which ->
+                .setItems(options) { _, which ->
                     when (which) {
                         0 -> pickImage.launch("image/*") // Pilih dari galeri
                         1 -> openCamera() // Ambil foto
@@ -173,9 +175,9 @@ class AddStoryActivity : AppCompatActivity() {
             return
         }
 
-        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        val requestFile = file.asRequestBody("image/jpeg/jpg".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData("photo", file.name, requestFile)
-        val description = RequestBody.create("text/plain".toMediaTypeOrNull(), descriptionText)
+        val description = descriptionText.toRequestBody("text/plain".toMediaTypeOrNull())
 
         // Ambil token dari SharedPreferences
         /*val sharedPreferences = getSharedPreferences("USER_SESSION", MODE_PRIVATE)
