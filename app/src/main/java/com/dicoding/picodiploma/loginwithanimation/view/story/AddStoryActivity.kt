@@ -156,14 +156,18 @@ class AddStoryActivity : AppCompatActivity() {
 
     private fun saveStory() {
         val descriptionText = storyDescription.text.toString()
+        Log.d("AddStoryActivity", "Description: $descriptionText")
 
         if (descriptionText.isBlank() || selectedImageUri == null) {
+            Log.d("AddStoryActivity", "Image URI: $selectedImageUri")
             showError("Deskripsi dan gambar tidak boleh kosong")
             return
+
         }
 
         // Pastikan file ada
         val file = getFileFromUri(selectedImageUri)
+        Log.d("AddStoryActivity", "File path: ${file?.absolutePath}")
         if (file == null) {
             showError("Gambar tidak valid")
             return
@@ -174,13 +178,13 @@ class AddStoryActivity : AppCompatActivity() {
         val description = RequestBody.create("text/plain".toMediaTypeOrNull(), descriptionText)
 
         // Ambil token dari SharedPreferences
-        val sharedPreferences = getSharedPreferences("USER_SESSION", MODE_PRIVATE)
+        /*val sharedPreferences = getSharedPreferences("USER_SESSION", MODE_PRIVATE)
         val token = sharedPreferences.getString("token", "") ?: ""
 
         if (token.isBlank()) {
             showError("Token tidak valid")
             return
-        }
+        }*/
 
         // Menggunakan ViewModel untuk upload story
         lifecycleScope.launch {
