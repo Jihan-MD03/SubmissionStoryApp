@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" >
-    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 
     <application
@@ -20,7 +28,10 @@
             android:name=".view.login.LoginActivity"
             android:exported="false" />
         <activity android:name=".view.story.StoryActivity"/>
-        <activity android:name=".view.story.StoryDetailActivity" />
+        <activity
+            android:name=".view.story.StoryDetailActivity"
+            android:theme="@style/Base.Theme.LoginWithAnimation" />
+        <activity android:name=".view.story.AddStoryActivity" />
         <activity
             android:name=".view.main.MainActivity"
             android:exported="true" >

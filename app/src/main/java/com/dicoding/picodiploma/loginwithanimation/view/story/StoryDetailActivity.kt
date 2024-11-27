@@ -1,77 +1,95 @@
 package com.dicoding.picodiploma.loginwithanimation.view.story
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.dicoding.picodiploma.loginwithanimation.R
-import com.dicoding.picodiploma.loginwithanimation.data.remote.ApiService
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
 
 class StoryDetailActivity : AppCompatActivity() {
 
     private lateinit var storyImageView: ImageView
     private lateinit var storyNameTextView: TextView
     private lateinit var storyDescriptionTextView: TextView
+    private lateinit var progressBar: View
 
-    private lateinit var apiService: ApiService
+    private val viewModel by viewModels<StoryDetailViewModel> {
+        ViewModelFactory.getInstance(application)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_story_detail)
 
+        // Aktifkan shared element transition
+        supportPostponeEnterTransition()
+
         storyImageView = findViewById(R.id.story_image)
         storyNameTextView = findViewById(R.id.story_name)
         storyDescriptionTextView = findViewById(R.id.story_description)
+        progressBar = findViewById(R.id.progressBar)
 
-        // Ambil ID story dari intent
-        val storyId = intent.getStringExtra("story_id") ?: return
-
-        // Inisialisasi API Service
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://story-api.dicoding.dev/v1/stories/{id}/") // Ganti dengan URL API Anda
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        apiService = retrofit.create(ApiService::class.java)
-
-        // Panggil API untuk mendapatkan detail story
-        fetchStoryDetail(storyId)
-    }
-
-    private fun fetchStoryDetail(storyId: String) {
-        val token = "Bearer ${getTokenFromSharedPreferences()}" // Ganti dengan fungsi pengambil token
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-
-                val response = apiService.getStoryDetail(token, storyId)
-                withContext(Dispatchers.Main) {
-                    if (!response.error) {
-                        val story = response.story
-                        Glide.with(this@StoryDetailActivity).load(story.photoUrl).into(storyImageView)
-                        storyNameTextView.text = story.name
-                        storyDescriptionTextView.text = story.description
-                    } else {
-                        Toast.makeText(this@StoryDetailActivity, "Failed to load story detail", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@StoryDetailActivity, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-                }
-            }
+        // Get story ID from intent
+        val storyId = intent.getStringExtra("story_id")
+        if (storyId.isNullOrEmpty()) {
+            Toast.makeText(this, "Story ID is missing", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
-    }
 
-    private fun getTokenFromSharedPreferences(): String {
-        val sharedPreferences = getSharedPreferences("user_session", MODE_PRIVATE)
-        return sharedPreferences.getString("token", "") ?: ""
+        progressBar.visibility = View.VISIBLE
+
+        // Fetch story detail using ViewModel
+        viewModel.getDetailStory(storyId)
+
+        // Observe story details
+        viewModel.story.observe(this) { story ->
+            progressBar.visibility = View.GONE
+
+            Glide.with(this)
+                .load(story.photoUrl)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        supportStartPostponedEnterTransition()
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        supportStartPostponedEnterTransition()
+                        return false
+                    }
+                })
+                .into(storyImageView)
+
+            storyNameTextView.text = story.name
+            storyDescriptionTextView.text = story.description
+        }
+
+        // Observe error message
+        viewModel.error.observe(this) { message ->
+            progressBar.visibility = View.GONE
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
     }
 }

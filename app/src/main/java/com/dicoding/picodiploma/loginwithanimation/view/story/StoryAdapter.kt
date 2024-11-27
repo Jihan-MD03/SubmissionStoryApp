@@ -1,5 +1,6 @@
 package com.dicoding.picodiploma.loginwithanimation.view.story
 
+import android.app.Activity
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -13,7 +14,6 @@ import com.dicoding.picodiploma.loginwithanimation.databinding.ItemStoryBinding
 
 class StoryAdapter : ListAdapter<ListStoryItem, StoryAdapter.StoryViewHolder>(StoryDiffCallback()) {
 
-    //private var stories: List<StoryActivity> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoryViewHolder {
         val binding = ItemStoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -27,7 +27,8 @@ class StoryAdapter : ListAdapter<ListStoryItem, StoryAdapter.StoryViewHolder>(St
 
     override fun getItemCount(): Int = currentList.size
 
-    inner class StoryViewHolder(private val binding: ItemStoryBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class StoryViewHolder(private val binding: ItemStoryBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(story: ListStoryItem) {
             binding.storyTitle.text = story.name
             binding.storyDescription.text = story.description
@@ -42,7 +43,15 @@ class StoryAdapter : ListAdapter<ListStoryItem, StoryAdapter.StoryViewHolder>(St
                 // Mengirim ID story ke StoryDetailActivity
                 val intent = Intent(binding.root.context, StoryDetailActivity::class.java)
                 intent.putExtra("story_id", story.id) // Mengirimkan ID story
-                binding.root.context.startActivity(intent)
+
+                // Membuat animasi shared element transition
+                val options = androidx.core.app.ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    binding.root.context as Activity,
+                    binding.ivStoryLogo,
+                    "story_image_transition"
+                )
+                // Memulai activity dengan animasi
+                binding.root.context.startActivity(intent, options.toBundle())
             }
         }
     }
@@ -57,3 +66,4 @@ class StoryAdapter : ListAdapter<ListStoryItem, StoryAdapter.StoryViewHolder>(St
         }
     }
 }
+

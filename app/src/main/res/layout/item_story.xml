@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:transitionName="story_image_transition"/>
 
     <TextView
         android:id="@+id/storyTitle"
@@ -28,4 +29,6 @@
         android:layout_height="wrap_content"
         android:text="Description"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+
 </LinearLayout>

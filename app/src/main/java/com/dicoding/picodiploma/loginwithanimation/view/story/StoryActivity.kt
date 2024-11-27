@@ -1,8 +1,10 @@
 package com.dicoding.picodiploma.loginwithanimation.view.story
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -15,12 +17,14 @@ import com.dicoding.picodiploma.loginwithanimation.data.pref.dataStore
 import com.dicoding.picodiploma.loginwithanimation.di.Injection
 import com.dicoding.picodiploma.loginwithanimation.view.StoryViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
 class StoryActivity : AppCompatActivity() {
 
     private lateinit var storyViewModel: StoryViewModel
     private lateinit var storyAdapter: StoryAdapter
+    private lateinit var progressBar: View
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +43,12 @@ class StoryActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = storyAdapter
 
+        // Ambil referensi ProgressBar
+        progressBar = findViewById(R.id.progressBar)
+
+        // Tampilkan ProgressBar saat pemanggilan data
+        progressBar.visibility = View.VISIBLE
+
         // Ambil token dengan cara yang benar menggunakan coroutine
         lifecycleScope.launch {
             val token = getTokenFromPreference()  // Ambil token dari preferensi secara asinkron
@@ -50,6 +60,7 @@ class StoryActivity : AppCompatActivity() {
             // Observasi LiveData stories dan error
             storyViewModel.stories.observe(this@StoryActivity) { stories ->
                 Log.d("StoryActivity", "Stories loaded: ${stories.size}")
+                progressBar.visibility = View.GONE
                 if (stories.isNotEmpty()) {
                     storyAdapter.submitList(stories)  // Kirim data ke adapter
                 } else {
@@ -58,9 +69,18 @@ class StoryActivity : AppCompatActivity() {
             }
 
             storyViewModel.error.observe(this@StoryActivity) { error ->
+                progressBar.visibility = View.GONE
                 Toast.makeText(this@StoryActivity, error, Toast.LENGTH_SHORT).show()  // Tampilkan error jika ada
                 Log.e("StoryActivity", "Error: $error")
             }
+        }
+
+        // Set click listener on the Floating Action Button
+        val fabAddStory: FloatingActionButton = findViewById(R.id.fab_add_story)
+        fabAddStory.setOnClickListener {
+            // Navigate to AddStoryActivity
+            val intent = Intent(this, AddStoryActivity::class.java)
+            startActivity(intent)
         }
     }
 
