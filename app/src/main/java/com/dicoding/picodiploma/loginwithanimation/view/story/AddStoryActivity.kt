@@ -1,12 +1,12 @@
 package com.dicoding.picodiploma.loginwithanimation.view.story
 
 import android.Manifest
-import android.content.ContentValues
+import android.content.ContentResolver
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -18,22 +18,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.dicoding.picodiploma.loginwithanimation.R
-import com.dicoding.picodiploma.loginwithanimation.view.StoryViewModel
+import com.dicoding.picodiploma.loginwithanimation.databinding.ActivityAddStoryBinding
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
-import com.dicoding.picodiploma.loginwithanimation.view.main.MainActivity
+import com.dicoding.picodiploma.loginwithanimation.view.getImageUri
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.io.FileInputStream
 
 class AddStoryActivity : AppCompatActivity() {
 
@@ -43,6 +41,7 @@ class AddStoryActivity : AppCompatActivity() {
     private lateinit var storyDescription: EditText
     private lateinit var progressBar: ProgressBar
     private lateinit var storyViewModel: StoryViewModel
+    private lateinit var binding: ActivityAddStoryBinding
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
@@ -51,32 +50,22 @@ class AddStoryActivity : AppCompatActivity() {
                 .load(it)
                 .into(addStoryImage)
             showLoading(false)
+            selectedImageUri = uri
         }
     }
-
-    private val takePicture =
-        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-            if (success) {
-                showLoading(true)
-                Glide.with(this)
-                    .load(selectedImageUri)
-                    .into(addStoryImage)
-                showLoading(false)
-            }
-        }
 
     private var selectedImageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_story)
+        binding = ActivityAddStoryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         storyViewModel = ViewModelProvider(this, ViewModelFactory.getInstance(applicationContext))[StoryViewModel::class.java]
 
         // Observer untuk upload success
         storyViewModel.uploadSuccess.observe(this) { response ->
             if (response != null && !response.error) {
-                navigateToMain()  // Arahkan ke MainActivity jika upload sukses
             }
         }
 
@@ -95,20 +84,20 @@ class AddStoryActivity : AppCompatActivity() {
         storyDescription = findViewById(R.id.story_description)
         progressBar = findViewById(R.id.progress_bar)
 
-        selectImageButton.setOnClickListener {
+        binding.selectImageButton.setOnClickListener {
             val options = arrayOf("Pilih dari Galeri", "Ambil Foto")
             val builder = android.app.AlertDialog.Builder(this)
             builder.setTitle("Pilih Opsi")
                 .setItems(options) { _, which ->
                     when (which) {
                         0 -> pickImage.launch("image/*") // Pilih dari galeri
-                        1 -> openCamera() // Ambil foto
+                        1 -> startCamera() // Ambil foto
                     }
                 }
             builder.show()
         }
 
-        saveStoryButton.setOnClickListener {
+        binding.saveStoryButton.setOnClickListener {
             saveStory()
         }
     }
@@ -147,21 +136,31 @@ class AddStoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun openCamera() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        takePictureIntent.resolveActivity(packageManager)?.also {
-            selectedImageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ContentValues())
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImageUri)
-            takePicture.launch(selectedImageUri)
+    private fun startCamera() {
+        selectedImageUri = getImageUri(this)
+        launcherIntentCamera.launch(selectedImageUri!!)
+    }
+
+    private val launcherIntentCamera = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { isSuccess ->
+        if (isSuccess) {
+            showImage()
+        } else {
+            selectedImageUri = null
+        }
+    }
+
+    private fun showImage() {
+        selectedImageUri?.let {
+            Log.d("Image URI", "showImage: $it")
+            binding.addStoryImage.setImageURI(it)
         }
     }
 
     private fun saveStory() {
         val descriptionText = storyDescription.text.toString()
-        Log.d("AddStoryActivity", "Description: $descriptionText")
-
         if (descriptionText.isBlank() || selectedImageUri == null) {
-            Log.d("AddStoryActivity", "Image URI: $selectedImageUri")
             showError("Deskripsi dan gambar tidak boleh kosong")
             return
 
@@ -169,67 +168,63 @@ class AddStoryActivity : AppCompatActivity() {
 
         // Pastikan file ada
         val file = getFileFromUri(selectedImageUri)
-        Log.d("AddStoryActivity", "File path: ${file?.absolutePath}")
         if (file == null) {
             showError("Gambar tidak valid")
             return
         }
 
-        val requestFile = file.asRequestBody("image/jpeg/jpg".toMediaTypeOrNull())
+        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData("photo", file.name, requestFile)
         val description = descriptionText.toRequestBody("text/plain".toMediaTypeOrNull())
 
-        // Ambil token dari SharedPreferences
-        /*val sharedPreferences = getSharedPreferences("USER_SESSION", MODE_PRIVATE)
-        val token = sharedPreferences.getString("token", "") ?: ""
-
-        if (token.isBlank()) {
-            showError("Token tidak valid")
-            return
-        }*/
 
         // Menggunakan ViewModel untuk upload story
         lifecycleScope.launch {
             try {
                 showLoading(true)
-                val response = storyViewModel.uploadStory(body, description)
-                Log.d("AddStoryActivity", "Upload successful: $response")  // Tambahkan log untuk melihat response
+                storyViewModel.uploadStory(body, description)
                 showLoading(false)
-
-                // Setelah story berhasil di-upload, navigasi ke MainActivity
-                navigateToMain()
 
                 // Atau beri tahu pengguna jika story berhasil di-upload
                 Toast.makeText(this@AddStoryActivity, "Story berhasil di-upload", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)  // Ganti dengan aktivitas yang sesuai
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                finish()
             } catch (e: Exception) {
                 showLoading(false)
                 showError("Terjadi kesalahan: ${e.message}")
-                Log.e("AddStoryActivity", "Upload failed", e)  // Tambahkan log untuk error
             }
         }
     }
 
     private fun getFileFromUri(uri: Uri?): File? {
         uri ?: return null
-        val contentResolver = contentResolver
-        val cursor = contentResolver.query(uri, null, null, null, null)
+        val fileDescriptor = contentResolver.openFileDescriptor(uri, "r", null) ?: return null
+        val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
+        val file = File(cacheDir, contentResolver.getFileName(uri)) // Cache file
+        file.outputStream().use { outputStream ->
+            inputStream.copyTo(outputStream)
+        }
+        return file
+    }
+
+    // Helper untuk mendapatkan nama file dari URI
+    private fun ContentResolver.getFileName(uri: Uri): String {
+        var name = ""
+        val cursor = query(uri, null, null, null, null)
         cursor?.use {
             if (it.moveToFirst()) {
-                val columnIndex = it.getColumnIndex("_data")
-                return File(it.getString(columnIndex))
+                val index = it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME)
+                name = it.getString(index)
             }
         }
-        return null
+        return name
     }
+
 
     private fun showError(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
     }
 
     private fun showLoading(isLoading: Boolean) {

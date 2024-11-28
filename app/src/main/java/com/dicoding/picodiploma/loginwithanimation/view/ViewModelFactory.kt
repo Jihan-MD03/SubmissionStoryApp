@@ -11,6 +11,7 @@ import com.dicoding.picodiploma.loginwithanimation.view.main.MainViewModel
 import com.dicoding.picodiploma.loginwithanimation.di.Injection
 import com.dicoding.picodiploma.loginwithanimation.data.remote.ApiConfig
 import com.dicoding.picodiploma.loginwithanimation.view.story.StoryDetailViewModel
+import com.dicoding.picodiploma.loginwithanimation.view.story.StoryViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 

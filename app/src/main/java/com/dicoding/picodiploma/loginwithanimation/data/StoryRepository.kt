@@ -12,7 +12,7 @@ import okhttp3.RequestBody
 class StoryRepository private constructor(private val apiService: ApiService) {
 
     suspend fun uploadStory(description: RequestBody, photo: MultipartBody.Part): AddNewStoryResponse {
-        return apiService.uploadStory(description, photo)
+        return apiService.uploadStory(photo, description)
     }
 
 

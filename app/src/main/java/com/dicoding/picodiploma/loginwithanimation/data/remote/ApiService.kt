@@ -38,8 +38,8 @@ interface ApiService {
     @Multipart
     @POST("stories")
     suspend fun uploadStory(
-        @Part ("image") photo: RequestBody,
-        @Part("description") description: MultipartBody.Part
+        @Part file: MultipartBody.Part,
+        @Part("description") description: RequestBody,
     ): AddNewStoryResponse
 
     @GET("stories/{id}")

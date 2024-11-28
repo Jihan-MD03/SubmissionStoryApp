@@ -15,7 +15,6 @@ import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.pref.dataStore
 import com.dicoding.picodiploma.loginwithanimation.di.Injection
-import com.dicoding.picodiploma.loginwithanimation.view.StoryViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
@@ -35,7 +34,7 @@ class StoryActivity : AppCompatActivity() {
         val userRepository = Injection.provideUserRepository(applicationContext) // Pastikan ada fungsi ini di Injection
         val storyRepository = Injection.provideStoryRepository(applicationContext) // Pastikan fungsi ini ada
         val factory = ViewModelFactory(userRepository, storyRepository)
-        storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
+        storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
         // Inisialisasi RecyclerView
         storyAdapter = StoryAdapter()
@@ -88,7 +87,7 @@ class StoryActivity : AppCompatActivity() {
     private suspend fun getTokenFromPreference(): String {
         // Ambil token dari UserPreference atau session
         val userPreference = UserPreference.getInstance(applicationContext.dataStore)
-        return userPreference.getToken() ?: ""  // Mengembalikan token atau string kosong jika token tidak ada
+        return userPreference.getToken() ?: ""
     }
 }
 
