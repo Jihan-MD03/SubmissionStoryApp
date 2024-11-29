@@ -37,8 +37,10 @@ class StoryActivity : AppCompatActivity() {
         // Toolbar siap digunakan untuk menampilkan titik tiga
 
         // Dapatkan ViewModel
-        val userRepository = Injection.provideUserRepository(applicationContext) // Pastikan ada fungsi ini di Injection
-        val storyRepository = Injection.provideStoryRepository(applicationContext) // Pastikan fungsi ini ada
+        val userRepository =
+            Injection.provideUserRepository(applicationContext) // Pastikan ada fungsi ini di Injection
+        val storyRepository =
+            Injection.provideStoryRepository(applicationContext) // Pastikan fungsi ini ada
         val factory = ViewModelFactory(userRepository, storyRepository)
         storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
@@ -61,24 +63,27 @@ class StoryActivity : AppCompatActivity() {
 
             // Mengambil data stories dengan token
             storyViewModel.getStories()
+        }
 
-            // Observasi LiveData stories dan error
-            storyViewModel.stories.observe(this@StoryActivity) { stories ->
-                Log.d("StoryActivity", "Stories loaded: ${stories.size}")
-                progressBar.visibility = View.GONE
-                if (stories.isNotEmpty()) {
-                    storyAdapter.submitList(stories)  // Kirim data ke adapter
-                } else {
-                    Toast.makeText(this@StoryActivity, "No stories found", Toast.LENGTH_SHORT).show()  // Jika tidak ada cerita
-                }
-            }
-
-            storyViewModel.error.observe(this@StoryActivity) { error ->
-                progressBar.visibility = View.GONE
-                Toast.makeText(this@StoryActivity, error, Toast.LENGTH_SHORT).show()  // Tampilkan error jika ada
-                Log.e("StoryActivity", "Error: $error")
+        // Observasi LiveData stories dan error
+        storyViewModel.stories.observe(this@StoryActivity) { stories ->
+            Log.d("StoryActivity", "Stories loaded: ${stories.size}")
+            progressBar.visibility = View.GONE
+            if (stories.isNotEmpty()) {
+                storyAdapter.submitList(stories)  // Kirim data ke adapter
+            } else {
+                Toast.makeText(this@StoryActivity, "No stories found", Toast.LENGTH_SHORT)
+                    .show()  // Jika tidak ada cerita
             }
         }
+
+        storyViewModel.error.observe(this@StoryActivity) { error ->
+            progressBar.visibility = View.GONE
+            Toast.makeText(this@StoryActivity, error, Toast.LENGTH_SHORT)
+                .show()  // Tampilkan error jika ada
+            Log.e("StoryActivity", "Error: $error")
+        }
+
 
         // Observasi uploadSuccess untuk refresh data setelah story di-upload
         storyViewModel.uploadSuccess.observe(this) { response ->
