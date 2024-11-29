@@ -16,6 +16,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -61,6 +62,13 @@ class AddStoryActivity : AppCompatActivity() {
         binding = ActivityAddStoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Aktivasi Toolbar di Activity
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        // Menampilkan judul di toolbar
+        supportActionBar?.title = "Add Your Stories"
+
         storyViewModel = ViewModelProvider(this, ViewModelFactory.getInstance(applicationContext))[StoryViewModel::class.java]
 
         // Observer untuk upload success
@@ -73,6 +81,11 @@ class AddStoryActivity : AppCompatActivity() {
         storyViewModel.error.observe(this) { errorMessage ->
             Toast.makeText(this, errorMessage, Toast.LENGTH_LONG)
                 .show()  // Tampilkan error jika gagal upload
+        }
+
+        // Observer untuk memantau status loading
+        storyViewModel.isLoading.observe(this) { isLoading ->
+            showLoading(isLoading)
         }
 
         checkPermissions()  // Panggil fungsi cek izin
@@ -187,7 +200,7 @@ class AddStoryActivity : AppCompatActivity() {
 
                 // Atau beri tahu pengguna jika story berhasil di-upload
                 Toast.makeText(this@AddStoryActivity, "Story berhasil di-upload", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)  // Ganti dengan aktivitas yang sesuai
+                val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
                 finish()

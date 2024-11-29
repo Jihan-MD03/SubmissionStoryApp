@@ -39,6 +39,12 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
         return preferences[passwordKey]
     }
 
+    suspend fun clearToken() {
+        dataStore.edit { preferences ->
+            preferences[TOKEN_KEY] = ""
+        }
+    }
+
     suspend fun saveSession(user: UserModel) {
         dataStore.edit { preferences ->
             preferences[EMAIL_KEY] = user.email

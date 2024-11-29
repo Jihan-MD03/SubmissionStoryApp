@@ -11,26 +11,29 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <!-- Judul Story -->
-        <TextView
-            android:id="@+id/storyTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add Your Stories"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/ivStoryLogo"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:title="Add Your Stories"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
+        <!-- Judul Story -->
 
         <ImageView
             android:id="@+id/add_story_image"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:scaleType="centerCrop"
             android:layout_marginBottom="16dp"
-            app:srcCompat="@drawable/image_icon"/>
+            android:layout_marginTop="16dp"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/image_icon" />
 
         <Button
             android:id="@+id/select_image_button"

@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.pref.dataStore
 import com.dicoding.picodiploma.loginwithanimation.di.Injection
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
+import com.dicoding.picodiploma.loginwithanimation.view.welcome.WelcomeActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
@@ -29,6 +31,10 @@ class StoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_story)
+
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        // Toolbar siap digunakan untuk menampilkan titik tiga
 
         // Dapatkan ViewModel
         val userRepository = Injection.provideUserRepository(applicationContext) // Pastikan ada fungsi ini di Injection
@@ -74,6 +80,12 @@ class StoryActivity : AppCompatActivity() {
             }
         }
 
+        // Observasi uploadSuccess untuk refresh data setelah story di-upload
+        storyViewModel.uploadSuccess.observe(this) { response ->
+            Log.d("StoryActivity", "Story uploaded successfully: ${response.message}")
+            storyViewModel.getStories()  // Ambil daftar story terbaru setelah upload
+        }
+
         // Set click listener on the Floating Action Button
         val fabAddStory: FloatingActionButton = findViewById(R.id.fab_add_story)
         fabAddStory.setOnClickListener {
@@ -82,6 +94,36 @@ class StoryActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+    override fun onCreateOptionsMenu(menu: android.view.Menu?): Boolean {
+        menuInflater.inflate(R.menu.logout_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                logoutUser() // Panggil fungsi logout
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun logoutUser() {
+        lifecycleScope.launch {
+            // Hapus sesi atau token pengguna
+            val userPreference = UserPreference.getInstance(applicationContext.dataStore)
+            userPreference.clearToken() // Pastikan Anda punya fungsi ini di `UserPreference`
+
+            // Arahkan ke halaman Welcome
+            val intent = Intent(this@StoryActivity, WelcomeActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+    }
+
 
     // Fungsi untuk mengambil token dari preferensi atau session
     private suspend fun getTokenFromPreference(): String {
