@@ -16,7 +16,6 @@ import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
 import com.dicoding.picodiploma.loginwithanimation.databinding.ActivityLoginBinding
 import com.dicoding.picodiploma.loginwithanimation.view.AuthViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
-import com.dicoding.picodiploma.loginwithanimation.view.main.MainActivity
 import com.dicoding.picodiploma.loginwithanimation.view.story.StoryActivity
 
 class LoginActivity : AppCompatActivity() {
@@ -40,6 +39,9 @@ class LoginActivity : AppCompatActivity() {
                 // Jika session ada, set data yang sudah tersimpan di EditText
                 binding.emailEditText.setText(userSession.email)
                 binding.passwordEditText.setText(userSession.password) // Menampilkan password yang disimpan
+            } ?: run {
+                binding.emailEditText.setText("")
+                binding.passwordEditText.setText("")
             }
         }
     }

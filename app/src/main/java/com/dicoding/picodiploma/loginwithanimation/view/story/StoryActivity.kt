@@ -119,7 +119,7 @@ class StoryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // Hapus sesi atau token pengguna
             val userPreference = UserPreference.getInstance(applicationContext.dataStore)
-            userPreference.clearToken() // Pastikan Anda punya fungsi ini di `UserPreference`
+            userPreference.clearToken()
 
             // Arahkan ke halaman Welcome
             val intent = Intent(this@StoryActivity, WelcomeActivity::class.java)

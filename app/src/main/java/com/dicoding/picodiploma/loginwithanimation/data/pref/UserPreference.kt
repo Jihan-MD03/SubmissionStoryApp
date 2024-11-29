@@ -41,7 +41,9 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
 
     suspend fun clearToken() {
         dataStore.edit { preferences ->
-            preferences[TOKEN_KEY] = ""
+            preferences.remove(TOKEN_KEY)
+            preferences.remove(PASSWORD_KEY)
+            preferences.remove(EMAIL_KEY)
         }
     }
 
