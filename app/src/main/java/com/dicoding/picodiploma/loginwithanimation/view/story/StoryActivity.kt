@@ -34,7 +34,6 @@ class StoryActivity : AppCompatActivity() {
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        // Toolbar siap digunakan untuk menampilkan titik tiga
 
         // Dapatkan ViewModel
         val userRepository =
@@ -53,10 +52,10 @@ class StoryActivity : AppCompatActivity() {
         // Ambil referensi ProgressBar
         progressBar = findViewById(R.id.progressBar)
 
-        // Tampilkan ProgressBar saat pemanggilan data
+        // Tampilkan ProgressBar
         progressBar.visibility = View.VISIBLE
 
-        // Ambil token dengan cara yang benar menggunakan coroutine
+        // Ambil token dengan cara coroutine
         lifecycleScope.launch {
             val token = getTokenFromPreference()  // Ambil token dari preferensi secara asinkron
             Log.d("Token", "Retrieved token: $token")

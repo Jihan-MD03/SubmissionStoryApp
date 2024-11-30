@@ -4,7 +4,6 @@ import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.remote.ApiService
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.ErrorResponse
-import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.LoginResult
 import com.dicoding.picodiploma.loginwithanimation.data.remote.Result
 import com.google.gson.Gson
