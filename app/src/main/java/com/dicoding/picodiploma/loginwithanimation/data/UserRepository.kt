@@ -25,7 +25,7 @@ class UserRepository private constructor(
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
             val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-            throw Exception(errorResponse?.message ?: "Unknown error occurred") // Lempar pesan error
+            throw Exception(errorResponse?.message ?: "Gagal mendaftar, coba lagi nanti.")
         }
     }
 

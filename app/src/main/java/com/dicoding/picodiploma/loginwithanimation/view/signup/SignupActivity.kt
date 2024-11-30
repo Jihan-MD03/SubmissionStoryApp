@@ -51,6 +51,10 @@ class SignupActivity : AppCompatActivity() {
         supportActionBar?.hide()
     }
 
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
     private fun setupAction() {
         binding.signupButton.setOnClickListener {
             val name = binding.nameEditText.text.toString()  // Mengambil nilai nama dari EditText
@@ -79,7 +83,7 @@ class SignupActivity : AppCompatActivity() {
                 }
 
 
-                if (!isFinishing && !isDestroyed) {
+                if (success && !isFinishing && !isDestroyed) {
                     AlertDialog.Builder(this).apply {
                         setTitle("Yeah!")
                         setMessage("Akun dengan $email sudah jadi nih. Yuk, login dan bagikan pengalaman di dicoding.")

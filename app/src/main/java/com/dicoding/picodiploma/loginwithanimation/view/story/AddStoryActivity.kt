@@ -26,7 +26,9 @@ import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.databinding.ActivityAddStoryBinding
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
 import com.dicoding.picodiploma.loginwithanimation.view.getImageUri
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -192,7 +194,7 @@ class AddStoryActivity : AppCompatActivity() {
 
 
         // Menggunakan ViewModel untuk upload story
-        lifecycleScope.launch {
+        /*lifecycleScope.launch {
             try {
                 showLoading(true)
                 storyViewModel.uploadStory(body, description)
@@ -207,6 +209,27 @@ class AddStoryActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 showLoading(false)
                 showError("Terjadi kesalahan: ${e.message}")
+            }
+        }
+    }*/
+
+        // Menggunakan ViewModel untuk upload story
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                storyViewModel.uploadStory(body, description)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@AddStoryActivity,
+                        "Story berhasil di-upload",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                    finish()
+                }
+            } catch (e: Exception) {
+
             }
         }
     }
