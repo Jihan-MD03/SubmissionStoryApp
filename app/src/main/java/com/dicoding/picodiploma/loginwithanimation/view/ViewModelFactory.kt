@@ -39,28 +39,4 @@ class ViewModelFactory(
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }
-
-
-    companion object {
-        @Volatile
-        private var INSTANCE: ViewModelFactory? = null
-        @JvmStatic
-        fun getInstance(context: Context): ViewModelFactory {
-            if (INSTANCE == null) {
-                synchronized(ViewModelFactory::class.java) {
-                    val userRepository = Injection.provideRepository(context) // Call the function directly
-
-                    // Dapatkan token dari UserPreference
-                    val pref = UserPreference.getInstance(context.dataStore)
-                    val token = runBlocking { pref.getSession().first().token ?: "" } // Default ke empty jika null
-
-                    val apiService = ApiConfig.getApiService(token)
-                    val storyRepository = StoryRepository.getInstance(apiService)
-
-                    INSTANCE = ViewModelFactory(userRepository, storyRepository)
-                }
-            }
-            return INSTANCE as ViewModelFactory
-        }
-    }
 }

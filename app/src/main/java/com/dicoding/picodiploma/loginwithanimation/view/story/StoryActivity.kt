@@ -17,6 +17,7 @@ import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.pref.dataStore
 import com.dicoding.picodiploma.loginwithanimation.di.Injection
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
+import com.dicoding.picodiploma.loginwithanimation.view.main.MainViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.welcome.WelcomeActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
@@ -35,13 +36,8 @@ class StoryActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Dapatkan ViewModel
-        val userRepository =
-            Injection.provideUserRepository(applicationContext) // Pastikan ada fungsi ini di Injection
-        val storyRepository =
-            Injection.provideStoryRepository(applicationContext) // Pastikan fungsi ini ada
-        val factory = ViewModelFactory(userRepository, storyRepository)
-        storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
+        // Inisialisasi ViewModel tanpa ViewModelFactory
+        storyViewModel = ViewModelProvider(this).get(StoryViewModel::class.java)
 
         // Inisialisasi RecyclerView
         storyAdapter = StoryAdapter()
@@ -60,7 +56,7 @@ class StoryActivity : AppCompatActivity() {
             val token = getTokenFromPreference()  // Ambil token dari preferensi secara asinkron
             Log.d("Token", "Retrieved token: $token")
 
-            // Mengambil data stories dengan token
+            // Memastikan storyViewModel sudah diinisialisasi, baru memanggil getStories()
             storyViewModel.getStories()
         }
 
@@ -82,7 +78,6 @@ class StoryActivity : AppCompatActivity() {
                 .show()  // Tampilkan error jika ada
             Log.e("StoryActivity", "Error: $error")
         }
-
 
         // Observasi uploadSuccess untuk refresh data setelah story di-upload
         storyViewModel.uploadSuccess.observe(this) { response ->
@@ -128,7 +123,6 @@ class StoryActivity : AppCompatActivity() {
         }
     }
 
-
     // Fungsi untuk mengambil token dari preferensi atau session
     private suspend fun getTokenFromPreference(): String {
         // Ambil token dari UserPreference atau session
@@ -136,6 +130,7 @@ class StoryActivity : AppCompatActivity() {
         return userPreference.getToken() ?: ""
     }
 }
+
 
 
 

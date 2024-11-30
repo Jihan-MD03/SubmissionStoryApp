@@ -20,7 +20,7 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 val message = userRepository.register(name, email, password)
-                onResult(true, message.toString()) // Tampilkan pesan sukses
+                onResult(true, message) // Tampilkan pesan sukses
             } catch (e: Exception) {
                 onResult(false, e.message ?: "Registration failed") // Tampilkan pesan error
             }

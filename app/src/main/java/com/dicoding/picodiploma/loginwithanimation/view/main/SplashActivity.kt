@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
 import com.dicoding.picodiploma.loginwithanimation.view.story.StoryActivity
@@ -15,13 +16,18 @@ import com.dicoding.picodiploma.loginwithanimation.view.welcome.WelcomeActivity
 
 class SplashActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<MainViewModel> {
-        ViewModelFactory.getInstance(this)
-    }
+
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(this)
+        )[MainViewModel::class.java]
+
 
         val appLogo = findViewById<ImageView>(R.id.logoImageView)
         val appName = findViewById<TextView>(R.id.appNameText)

@@ -10,20 +10,25 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.dicoding.picodiploma.loginwithanimation.databinding.ActivitySignupBinding
 import com.dicoding.picodiploma.loginwithanimation.view.AuthViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
-    private val authViewModel by viewModels<AuthViewModel> {
-        ViewModelFactory.getInstance(this)
-    }
+    private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Inisialisasi ViewModel
+        authViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(this)
+        )[AuthViewModel::class.java]
 
         setupView()
         setupAction()

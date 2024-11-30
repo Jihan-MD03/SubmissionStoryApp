@@ -27,18 +27,19 @@ class StoryRepository private constructor(private val apiService: ApiService) {
         }
     }
 
-    suspend fun getDetailStory(id: String): Story {
+    suspend fun getStoryDetail(storyId: String): Story? {
         return try {
-            val response = apiService.getStoryDetail(id)
+            val response = apiService.getStoryDetail(storyId)
             response.story
         } catch (e: Exception) {
             Log.e("StoryRepository", "Error fetching stories", e)
             throw Exception("Error fetching stories: ${e.message}")
         }
+
     }
 
 
-            companion object {
+    companion object {
         @Volatile
         private var instance: StoryRepository? = null
 

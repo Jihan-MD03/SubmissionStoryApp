@@ -45,6 +45,7 @@ class AddStoryActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var storyViewModel: StoryViewModel
     private lateinit var binding: ActivityAddStoryBinding
+    private lateinit var viewModel: StoryDetailViewModel
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
@@ -71,7 +72,11 @@ class AddStoryActivity : AppCompatActivity() {
         // Menampilkan judul di toolbar
         supportActionBar?.title = "Add Your Stories"
 
-        storyViewModel = ViewModelProvider(this, ViewModelFactory.getInstance(applicationContext))[StoryViewModel::class.java]
+        // Inisialisasi ViewModel
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(application)
+        )[StoryDetailViewModel::class.java]
 
         // Observer untuk upload success
         storyViewModel.uploadSuccess.observe(this) { response ->

@@ -8,9 +8,9 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.dicoding.picodiploma.loginwithanimation.data.remote.Result
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
 import com.dicoding.picodiploma.loginwithanimation.databinding.ActivityLoginBinding
@@ -20,14 +20,18 @@ import com.dicoding.picodiploma.loginwithanimation.view.story.StoryActivity
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    private val authViewModel by viewModels<AuthViewModel> {
-        ViewModelFactory.getInstance(this)
-    }
+    private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Inisialisasi ViewModel
+        authViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(this)
+        )[AuthViewModel::class.java]
 
         setupView()
         setupAction()

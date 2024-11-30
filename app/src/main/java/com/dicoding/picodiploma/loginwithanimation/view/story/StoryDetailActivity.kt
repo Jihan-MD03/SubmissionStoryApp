@@ -6,8 +6,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -15,6 +16,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
+import kotlinx.coroutines.launch
 
 class StoryDetailActivity : AppCompatActivity() {
 
@@ -23,9 +25,7 @@ class StoryDetailActivity : AppCompatActivity() {
     private lateinit var storyDescriptionTextView: TextView
     private lateinit var progressBar: View
 
-    private val viewModel by viewModels<StoryDetailViewModel> {
-        ViewModelFactory.getInstance(application)
-    }
+    private lateinit var viewModel: StoryDetailViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +39,12 @@ class StoryDetailActivity : AppCompatActivity() {
         storyDescriptionTextView = findViewById(R.id.story_description)
         progressBar = findViewById(R.id.progressBar)
 
+        // Inisialisasi ViewModel
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(application)
+        )[StoryDetailViewModel::class.java]
+
         // Get story ID from intent
         val storyId = intent.getStringExtra("story_id")
         if (storyId.isNullOrEmpty()) {
@@ -50,7 +56,9 @@ class StoryDetailActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
 
         // Fetch story detail using ViewModel
-        viewModel.getDetailStory(storyId)
+        lifecycleScope.launch {
+            viewModel.fetchStoryDetail(storyId)
+        }
 
         // Observe story details
         viewModel.story.observe(this) { story ->
