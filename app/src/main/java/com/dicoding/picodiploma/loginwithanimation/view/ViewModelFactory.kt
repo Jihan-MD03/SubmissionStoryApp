@@ -17,24 +17,23 @@ import kotlinx.coroutines.runBlocking
 
 
 class ViewModelFactory(
-    private val userRepository: UserRepository,
-    private val storyRepository: StoryRepository
+    private val context: Context
 ) : ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(MainViewModel::class.java) -> {
-                MainViewModel(userRepository) as T
+                MainViewModel(Injection.provideRepository(context)) as T
             }
             modelClass.isAssignableFrom(AuthViewModel::class.java) -> {
-                AuthViewModel(userRepository) as T // Perbaiki penggunaan repository
+                AuthViewModel(Injection.provideRepository(context)) as T // Perbaiki penggunaan repository
             }
             modelClass.isAssignableFrom(StoryViewModel::class.java) -> {
-                StoryViewModel(storyRepository) as T
+                StoryViewModel(Injection.provideStoryRepository(context)) as T
             }
             modelClass.isAssignableFrom(StoryDetailViewModel::class.java) -> {
-                StoryDetailViewModel(storyRepository) as T
+                StoryDetailViewModel(Injection.provideStoryRepository(context)) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
