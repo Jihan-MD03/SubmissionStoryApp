@@ -194,26 +194,6 @@ class AddStoryActivity : AppCompatActivity() {
 
 
         // Menggunakan ViewModel untuk upload story
-        /*lifecycleScope.launch {
-            try {
-                showLoading(true)
-                storyViewModel.uploadStory(body, description)
-                showLoading(false)
-
-                // Atau beri tahu pengguna jika story berhasil di-upload
-                Toast.makeText(this@AddStoryActivity, "Story berhasil di-upload", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-                finish()
-            } catch (e: Exception) {
-                showLoading(false)
-                showError("Terjadi kesalahan: ${e.message}")
-            }
-        }
-    }*/
-
-        // Menggunakan ViewModel untuk upload story
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 storyViewModel.uploadStory(body, description)
