@@ -57,7 +57,7 @@ class StoryDetailActivity : AppCompatActivity() {
 
         // Fetch story detail using ViewModel
         lifecycleScope.launch {
-            viewModel.fetchStoryDetail(storyId)
+            viewModel.getDetailStory(storyId)
         }
 
         // Observe story details

@@ -73,10 +73,8 @@ class AddStoryActivity : AppCompatActivity() {
         supportActionBar?.title = "Add Your Stories"
 
         // Inisialisasi ViewModel
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelFactory(application)
-        )[StoryDetailViewModel::class.java]
+        val factory = ViewModelFactory(this)
+        storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
         // Observer untuk upload success
         storyViewModel.uploadSuccess.observe(this) { response ->

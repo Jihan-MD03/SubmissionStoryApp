@@ -8,9 +8,26 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
 
+    private const val BASE_URL = "https://story-api.dicoding.dev/v1/"
 
-    // Fungsi untuk membuat ApiService dengan token
-    fun getApiService(token: String): ApiService {
+    // Fungsi untuk membuat AuthApiService tanpa token
+    fun getAuthApiService(s: String): AuthApiService {
+        val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        val client = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+
+        return retrofit.create(AuthApiService::class.java)
+    }
+
+    // Fungsi untuk membuat StoryApiService dengan token
+    fun getStoryApiService(token: String): StoryApiService {
         val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         val authInterceptor = Interceptor { chain ->
             val request = chain.request().newBuilder()
@@ -25,11 +42,11 @@ object ApiConfig {
             .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://story-api.dicoding.dev/v1/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
 
-        return retrofit.create(ApiService::class.java)
+        return retrofit.create(StoryApiService::class.java)
     }
 }

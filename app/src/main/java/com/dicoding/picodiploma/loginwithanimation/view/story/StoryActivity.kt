@@ -15,9 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.pref.dataStore
-import com.dicoding.picodiploma.loginwithanimation.di.Injection
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
-import com.dicoding.picodiploma.loginwithanimation.view.main.MainViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.welcome.WelcomeActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
@@ -37,7 +35,7 @@ class StoryActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         // Inisialisasi ViewModel tanpa ViewModelFactory
-        storyViewModel = ViewModelProvider(this).get(StoryViewModel::class.java)
+        storyViewModel = ViewModelProvider(this, ViewModelFactory(this)).get(StoryViewModel::class.java)
 
         // Inisialisasi RecyclerView
         storyAdapter = StoryAdapter()
