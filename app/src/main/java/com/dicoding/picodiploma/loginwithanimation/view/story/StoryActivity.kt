@@ -50,13 +50,13 @@ class StoryActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
 
         // Ambil token dengan cara coroutine
-        lifecycleScope.launch {
+        /*lifecycleScope.launch {
             val token = getTokenFromPreference()  // Ambil token dari preferensi secara asinkron
             Log.d("Token", "Retrieved token: $token")
 
             // Memastikan storyViewModel sudah diinisialisasi, baru memanggil getStories()
             storyViewModel.getStories()
-        }
+        }*/
 
         // Observasi LiveData stories dan error
         storyViewModel.stories.observe(this@StoryActivity) { stories ->
@@ -78,10 +78,10 @@ class StoryActivity : AppCompatActivity() {
         }
 
         // Observasi uploadSuccess untuk refresh data setelah story di-upload
-        storyViewModel.uploadSuccess.observe(this) { response ->
+        /*storyViewModel.uploadSuccess.observe(this) { response ->
             Log.d("StoryActivity", "Story uploaded successfully: ${response.message}")
             storyViewModel.getStories()  // Ambil daftar story terbaru setelah upload
-        }
+        }*/
 
         // Set click listener on the Floating Action Button
         val fabAddStory: FloatingActionButton = findViewById(R.id.fab_add_story)

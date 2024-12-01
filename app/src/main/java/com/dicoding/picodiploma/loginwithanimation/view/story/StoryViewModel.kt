@@ -26,7 +26,9 @@ class StoryViewModel(private val storyRepository: StoryRepository) : ViewModel()
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-
+    init {
+        getStories()
+    }
 
     fun getStories() {
         viewModelScope.launch {
@@ -48,7 +50,6 @@ class StoryViewModel(private val storyRepository: StoryRepository) : ViewModel()
                 _isLoading.postValue(true)  // Tampilkan loading saat mulai upload
                 val response = storyRepository.uploadStory(description, photo)
                 _uploadSuccess.postValue(response)
-                getStories() // Memperbarui daftar cerita
             } catch (e: Exception) {
                 _error.postValue("Gagal mengunggah cerita: ${e.message}")
             } finally {
