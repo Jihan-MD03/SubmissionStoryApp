@@ -34,7 +34,7 @@ class StoryActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Inisialisasi ViewModel tanpa ViewModelFactory
+        // Inisialisasi ViewModel
         storyViewModel = ViewModelProvider(this, ViewModelFactory(this)).get(StoryViewModel::class.java)
 
         // Inisialisasi RecyclerView
@@ -112,6 +112,8 @@ class StoryActivity : AppCompatActivity() {
             // Hapus sesi atau token pengguna
             val userPreference = UserPreference.getInstance(applicationContext.dataStore)
             userPreference.clearToken()
+
+            storyViewModel.clearData()
 
             // Arahkan ke halaman Welcome
             val intent = Intent(this@StoryActivity, WelcomeActivity::class.java)

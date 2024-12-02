@@ -80,7 +80,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

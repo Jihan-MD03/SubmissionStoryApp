@@ -63,7 +63,7 @@ class UserRepository private constructor(
 
     // Untuk Logout
     suspend fun logout() {
-        userPreference.logout()
+        userPreference.clearToken() // Pastikan token dihapus
     }
     companion object {
         @Volatile

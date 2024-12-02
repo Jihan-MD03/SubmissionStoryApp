@@ -47,7 +47,7 @@ class StoryViewModel(private val storyRepository: StoryRepository) : ViewModel()
         viewModelScope.launch {
             try {
 
-                _isLoading.postValue(true)  // Tampilkan loading saat mulai upload
+                _isLoading.postValue(true)
                 val response = storyRepository.uploadStory(description, photo)
                 _uploadSuccess.postValue(response)
             } catch (e: Exception) {
@@ -57,6 +57,10 @@ class StoryViewModel(private val storyRepository: StoryRepository) : ViewModel()
             }
         }
     }
-
+    fun clearData() {
+        _stories.postValue(emptyList()) // Mengosongkan daftar cerita
+        _error.postValue("")          // Menghapus error jika ada
+        _isLoading.postValue(false)     // Set status loading ke false
+    }
 }
 
