@@ -217,6 +217,9 @@ class AddStoryActivity : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 }, 2000)
+            }  else {
+                Toast.makeText(this@AddStoryActivity, "Upload gagal, coba lagi", Toast.LENGTH_SHORT).show()
+                // Jangan kembali ke halaman lain, tetap di AddStoryActivity
             }
         }
     }

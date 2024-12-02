@@ -57,10 +57,5 @@ class StoryViewModel(private val storyRepository: StoryRepository) : ViewModel()
             }
         }
     }
-    fun clearData() {
-        _stories.postValue(emptyList()) // Mengosongkan daftar cerita
-        _error.postValue("")          // Menghapus error jika ada
-        _isLoading.postValue(false)     // Set status loading ke false
-    }
 }
 
