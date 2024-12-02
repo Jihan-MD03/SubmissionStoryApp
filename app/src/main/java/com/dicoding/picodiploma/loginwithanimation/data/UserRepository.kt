@@ -35,6 +35,7 @@ class UserRepository private constructor(
             val response = authApiService.login(email, password)
             val result = response.loginResult
             saveToken(result.token)
+            saveSession(UserModel(email, result.token, password, true))
             emit(Result.Success(result))
         } catch (e: HttpException) {
             emit(Result.Error(e.message()))
@@ -63,7 +64,7 @@ class UserRepository private constructor(
 
     // Untuk Logout
     suspend fun logout() {
-        userPreference.clearToken() // Pastikan token dihapus
+        return userPreference.clearToken()// Pastikan token dihapus
     }
     companion object {
         @Volatile
