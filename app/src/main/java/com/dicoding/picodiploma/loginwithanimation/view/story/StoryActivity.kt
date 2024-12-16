@@ -10,14 +10,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.pref.dataStore
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
+import com.dicoding.picodiploma.loginwithanimation.view.maps.MapsActivity
 import com.dicoding.picodiploma.loginwithanimation.view.welcome.WelcomeActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class StoryActivity : AppCompatActivity() {
@@ -46,28 +49,41 @@ class StoryActivity : AppCompatActivity() {
         // Ambil referensi ProgressBar
         progressBar = findViewById(R.id.progressBar)
 
-        // Tampilkan ProgressBar
-        progressBar.visibility = View.VISIBLE
+        // Tambahkan LoadStateListener untuk memantau kondisi loading
+        storyAdapter.addLoadStateListener { loadState ->
+            when {
+                loadState.refresh is LoadState.Loading -> {
+                    // Tampilkan ProgressBar ketika memuat
+                    progressBar.visibility = View.VISIBLE
+                }
 
-        // Ambil token dengan cara coroutine
-        /*lifecycleScope.launch {
-            val token = getTokenFromPreference()  // Ambil token dari preferensi secara asinkron
-            Log.d("Token", "Retrieved token: $token")
+                loadState.refresh is LoadState.Error -> {
+                    // Jika error, sembunyikan loading dan tampilkan pesan
+                    progressBar.visibility = View.GONE
+                    Toast.makeText(
+                        this,
+                        "Error: ${(loadState.refresh as LoadState.Error).error.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
-            // Memastikan storyViewModel sudah diinisialisasi, baru memanggil getStories()
-            storyViewModel.getStories()
-        }*/
+                else -> {
+                    // Sembunyikan loading saat data sudah dimuat
+                    progressBar.visibility = View.GONE
+                }
+            }
+        }
 
         // Observasi LiveData stories dan error
-        storyViewModel.stories.observe(this@StoryActivity) { stories ->
-            Log.d("StoryActivity", "Stories loaded: ${stories.size}")
-            progressBar.visibility = View.GONE
-            if (stories.isNotEmpty()) {
-                storyAdapter.submitList(stories)  // Kirim data ke adapter
-            } else {
-                Toast.makeText(this@StoryActivity, "No stories found", Toast.LENGTH_SHORT)
-                    .show()  // Jika tidak ada cerita
+        lifecycleScope.launch {
+            storyViewModel.pagedStories.collectLatest { pagingData ->
+                storyAdapter.submitData(pagingData)
+                progressBar.visibility = View.GONE
             }
+        }
+
+        storyViewModel.error.observe(this) { error ->
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
         }
 
         storyViewModel.error.observe(this@StoryActivity) { error ->
@@ -76,12 +92,6 @@ class StoryActivity : AppCompatActivity() {
                 .show()  // Tampilkan error jika ada
             Log.e("StoryActivity", "Error: $error")
         }
-
-        // Observasi uploadSuccess untuk refresh data setelah story di-upload
-        /*storyViewModel.uploadSuccess.observe(this) { response ->
-            Log.d("StoryActivity", "Story uploaded successfully: ${response.message}")
-            storyViewModel.getStories()  // Ambil daftar story terbaru setelah upload
-        }*/
 
         // Set click listener on the Floating Action Button
         val fabAddStory: FloatingActionButton = findViewById(R.id.fab_add_story)
@@ -103,6 +113,11 @@ class StoryActivity : AppCompatActivity() {
                 logoutUser() // Panggil fungsi logout
                 true
             }
+            R.id.action_maps -> {
+                val intent = Intent(this, MapsActivity::class.java)
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -113,7 +128,7 @@ class StoryActivity : AppCompatActivity() {
             val userPreference = UserPreference.getInstance(applicationContext.dataStore)
             userPreference.clearToken()
 
-            storyViewModel.clearData()
+            storyViewModel.logout()
 
             // Arahkan ke halaman Welcome
             val intent = Intent(this@StoryActivity, WelcomeActivity::class.java)

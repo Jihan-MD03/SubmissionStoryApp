@@ -10,10 +10,14 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface StoryApiService {
     @GET("stories")
-    suspend fun getStories(): StoryResponse
+    suspend fun getStories(
+        @Query("page") page: Int = 1,
+        @Query("size") size: Int = 20
+    ): StoryResponse
 
     // Endpoint untuk mengunggah story
     @Multipart
@@ -27,4 +31,9 @@ interface StoryApiService {
     suspend fun getStoryDetail(
         @Path("id") id: String
     ) : DetailResponse
+
+    @GET("stories")
+    suspend fun getStoriesWithLocation(
+        @Query("location") location: Int = 1,
+    ): StoryResponse
 }

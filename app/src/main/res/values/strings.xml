@@ -1,18 +1,28 @@
 <resources>
     <string name="app_name">Dicoding Story</string>
+    <string name="image_description">Deskripsi singkat tentang gambar</string>
     <string name="signup">Daftar</string>
     <string name="login">Masuk</string>
+    <string name="dialog_title">Yeah!</string>
+    <string name="dialog_message">Anda berhasil login. Sudah tidak sabar untuk berbagi pengalaman nih!</string>
+    <string name="dialog_positive_button">Lanjut</string>
     <string name="message_welcome_page">Bagikan pengalaman Anda dalam mengikuti event ataupun bootcamp yang diselenggarakan oleh Dicoding!</string>
     <string name="title_welcome_page">Selamat datang di Dicoding Story!</string>
     <string name="title_signup_page">Lengkapi data dirimu di bawah ini ya</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="password_error">Password tidak boleh kurang dari 8 karakter</string>
     <string name="message_login_page">Masukkan dulu datamu ya</string>
     <string name="title_login_page">Sudah siap untuk membagikan pengalaman mu??</string>
     <string name="name">Nama</string>
-    <string name="message_main_page">Selamat Berbagi penglaman di Dicoding.</string>
+    <string name="message_main_page">Selamat Berbagi pengalaman di Dicoding.</string>
     <string name="greeting">Halo %1$s,</string>
     <string name="logout">Keluar</string>
+    <string name="maps">Lokasi</string>
+    <string name="normal_type">Normal</string>
+    <string name="satellite_type">Satellite</string>
+    <string name="terrain_type">Terrain</string>
+    <string name="hybrid_type">Hybrid</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
@@ -55,5 +65,6 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="title_activity_maps">MapsActivity</string>
 
 </resources>

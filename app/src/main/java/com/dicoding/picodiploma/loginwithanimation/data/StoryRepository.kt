@@ -1,17 +1,25 @@
 package com.dicoding.picodiploma.loginwithanimation.data
 
 import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.dicoding.picodiploma.loginwithanimation.data.paging.StoryPagingSource
+import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.remote.StoryApiService
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.AddNewStoryResponse
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.Story
+import com.dicoding.picodiploma.loginwithanimation.data.remote.responses.StoryResponse
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
 
 class StoryRepository private constructor(
-    private val storyApiService: StoryApiService) {
-
+    private val storyApiService: StoryApiService,
+    private val userPreference: UserPreference,
+) {
     suspend fun uploadStory(description: RequestBody, photo: MultipartBody.Part): AddNewStoryResponse {
         return storyApiService.uploadStory(photo, description)
     }
@@ -28,6 +36,16 @@ class StoryRepository private constructor(
         }
     }
 
+    fun getPagedStories(): Flow<PagingData<ListStoryItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20, // Ukuran data per halaman
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { StoryPagingSource(storyApiService) }
+        ).flow
+    }
+
     suspend fun getDetailStory(id: String): Story {
         return try {
             val response = storyApiService.getStoryDetail(id)
@@ -38,15 +56,21 @@ class StoryRepository private constructor(
         }
     }
 
+    suspend fun getStoriesWithLocation(): StoryResponse {
+        return storyApiService.getStoriesWithLocation()
+    }
+
+    // Untuk Logout
+    suspend fun logout() {
+        userPreference.logout()
+    }
+
 
     companion object {
-        @Volatile
-        private var instance: StoryRepository? = null
 
-        fun getInstance(storyApiService: StoryApiService): StoryRepository =
-            instance ?: synchronized(this) {
-                instance ?: StoryRepository(storyApiService).also { instance = it }
+        fun getInstance(storyApiService: StoryApiService,
+                        userPreference: UserPreference):
+                StoryRepository = StoryRepository(storyApiService, userPreference)
             }
     }
-}
 

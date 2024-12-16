@@ -23,12 +23,6 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
         }
     }
 
-    suspend fun savePassword(password: String) {
-        dataStore.edit { preferences ->
-            preferences[passwordKey] = password // Menyimpan password
-        }
-    }
-
     suspend fun getToken(): String? {
         val preferences = dataStore.data.first()
         return preferences[tokenKey]

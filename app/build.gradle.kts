@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.google.devtools.ksp")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -14,7 +15,6 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -49,6 +49,9 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation ("com.google.android.gms:play-services-location:17.0.0")
+    testImplementation("junit:junit:4.12")
     ksp("androidx.room:room-compiler:2.6.1")
 
     // tESTING
@@ -84,7 +87,16 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
 
+    //Paging
+    implementation ("androidx.paging:paging-runtime:3.1.0")
 
-
+    // Testing libraries
+    testImplementation ("junit:junit:4.13.2")
+    testImplementation ("org.mockito:mockito-core:4.11.0")
+    testImplementation ("org.mockito:mockito-inline:4.4.0")
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
+    testImplementation ("androidx.test.ext:junit:1.1.5")
+    testImplementation ("androidx.paging:paging-common-ktx:3.2.0")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
 }

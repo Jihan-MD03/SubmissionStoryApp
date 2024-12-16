@@ -6,8 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
@@ -208,15 +206,11 @@ class AddStoryActivity : AppCompatActivity() {
                     "Story berhasil di-upload",
                     Toast.LENGTH_SHORT
                 ).show()
-                progressBar.visibility = View.VISIBLE
-                Handler(Looper.getMainLooper()).postDelayed({
-                    progressBar.visibility = View.GONE
 
                     val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                     finish()
-                }, 2000)
             }  else {
                 Toast.makeText(this@AddStoryActivity, "Upload gagal, coba lagi", Toast.LENGTH_SHORT).show()
                 // Jangan kembali ke halaman lain, tetap di AddStoryActivity

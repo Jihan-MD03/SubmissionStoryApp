@@ -19,10 +19,10 @@ object Injection {
 
     fun provideStoryRepository(context: Context): StoryRepository {
         val pref = UserPreference.getInstance(context.dataStore)
-        val token = runBlocking { pref.getSession().first().token } // Ambil token dari sesi
+        val token = runBlocking { pref.getSession().first().token }
             ?: throw IllegalStateException("Token is null. Please ensure the user is logged in.")
         val apiService = ApiConfig.getStoryApiService(token)
-        return StoryRepository.getInstance(apiService)
+        return StoryRepository.getInstance(apiService, pref)
     }
 }
 

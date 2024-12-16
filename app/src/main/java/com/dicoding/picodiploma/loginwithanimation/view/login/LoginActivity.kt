@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.data.remote.Result
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
 import com.dicoding.picodiploma.loginwithanimation.databinding.ActivityLoginBinding
@@ -98,7 +99,7 @@ class LoginActivity : AppCompatActivity() {
 
                     is Result.Success -> {
                         binding.progressBar.visibility = View.GONE
-                        val loginResult = result.data
+                        result.data
                         authViewModel.run {
                             saveToken(result.data.token)
                             saveSession(
@@ -111,9 +112,9 @@ class LoginActivity : AppCompatActivity() {
                             )
                         }
                         AlertDialog.Builder(this).apply {
-                            setTitle("Yeah!")
-                            setMessage("Anda berhasil login. Sudah tidak sabar untuk berbagi pengalaman nih!")
-                            setPositiveButton("Lanjut") { _, _ ->
+                            setTitle(getString(R.string.dialog_title))
+                            setMessage(getString(R.string.dialog_message))
+                            setPositiveButton(getString(R.string.dialog_positive_button)) { _, _ ->
                                 val intent = Intent(this@LoginActivity, StoryActivity::class.java)
                                 intent.flags =
                                     Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
